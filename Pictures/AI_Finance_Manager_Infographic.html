@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The AI-Driven Evolution of the U.S. Finance Manager</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Embedded CSS for specific constraints -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F0F4F8; /* Light blue-grey background */
+            color: #1E293B; /* Slate 800 */
+        }
+        
+        /* Chart Container Strict Styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px; /* Constraint width */
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px; /* Base height */
+            max-height: 500px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+
+        /* Custom Flowchart Styling (No SVG) */
+        .flow-step {
+            position: relative;
+            z-index: 10;
+        }
+        .flow-arrow::after {
+            content: '▼';
+            font-size: 1.5rem;
+            color: #94A3B8;
+            display: block;
+            text-align: center;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        @media (min-width: 768px) {
+            .flow-arrow::after {
+                content: '▶';
+                position: absolute;
+                right: -1.5rem;
+                top: 50%;
+                transform: translateY(-50%);
+                margin: 0;
+            }
+            .flow-arrow-last::after {
+                content: '';
+            }
+        }
+
+        /* Palette Classes based on "Brilliant Blues" idea */
+        .text-accent { color: #2563EB; } /* Blue 600 */
+        .bg-accent { background-color: #2563EB; }
+        .text-vibrant { color: #F97316; } /* Orange 500 */
+        .bg-vibrant { background-color: #F97316; }
+        .bg-card { background-color: #FFFFFF; }
+        .border-theme { border-color: #E2E8F0; }
+    </style>
+    <!-- 
+        Palette Selection: "Brilliant Blues/Tech"
+        Primary: #2563EB (Royal Blue)
+        Secondary: #0F172A (Deep Slate)
+        Accent: #F97316 (Vibrant Orange for Human elements)
+        Background: #F0F4F8
+        
+        Source Material Integration Plan:
+        1. Intro: Shift from "Scorekeeper" to "Strategic Architect".
+        2. Vis 1 (Radar): Functional shift (Reporting down, Strategy up).
+        3. Vis 2 (Stacked Bar): Automation vs Augmentation in specific tasks.
+        4. Vis 3 (Flow): AI Data Loop -> Human Decision.
+        5. Vis 4 (Bar): Skill shift (Excel down, Data Sci up).
+        6. Vis 5 (Line): Productivity gains.
+        7. Conclusion: Strategic advice.
+        
+        NO SVG. NO Mermaid. Canvas only.
+    -->
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8 shadow-lg">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-orange-500 font-bold tracking-wider uppercase mb-2">Research Report 2025-2035</p>
+            <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">
+                The AI-Driven Evolution of the <br>
+                <span class="text-blue-400">U.S. Finance Manager</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto mt-6">
+                From retro-active reporting to predictive strategic architecture: How Artificial Intelligence is redefining the CFO office.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid grid-cols-1 gap-12">
+
+        <!-- Section 1: Introduction -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white rounded-xl shadow-md p-8 border-l-8 border-blue-600">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">The Strategic Pivot</h2>
+                <p class="text-lg text-slate-600 mb-4 leading-relaxed">
+                    Historically, U.S. Finance Managers spent nearly <strong>70% of their time</strong> on transaction processing, closing books, and historical reporting. The integration of GenAI and Predictive Analytics is flipping this paradigm.
+                </p>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    By 2030, the "Scorekeeper" model will be obsolete. The new Finance Manager will act as a <strong>Strategic Architect</strong>, leveraging real-time data to guide corporate navigation rather than just reporting the weather after the storm.
+                </p>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-6 border border-slate-200">
+                <h3 class="font-bold text-xl mb-4 text-center text-blue-800">Key Drivers of Change</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <span class="text-orange-500 text-xl mr-3">●</span>
+                        <span class="text-slate-700"><strong>Generative AI:</strong> Automating narrative generation for financial reports.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-orange-500 text-xl mr-3">●</span>
+                        <span class="text-slate-700"><strong>Predictive Analytics:</strong> Shifting forecasting from static annual budgets to rolling, real-time scenarios.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-orange-500 text-xl mr-3">●</span>
+                        <span class="text-slate-700"><strong>RPA (Robotic Process Automation):</strong> Eliminating manual reconciliation and data entry.</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 2: Functional Transformation (Radar Chart) -->
+        <section class="bg-white rounded-xl shadow-md p-8">
+            <div class="mb-8 border-b pb-4 border-slate-100">
+                <h2 class="text-3xl font-bold text-slate-800">Reshaping Responsibilities</h2>
+                <p class="text-slate-500 mt-2">Comparison of time allocation: Traditional Roles vs. AI-Enabled Roles (2030+).</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+                <div class="lg:col-span-1 flex flex-col justify-center space-y-6">
+                    <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                        <h4 class="font-bold text-blue-900">Drastic Reduction</h4>
+                        <p class="text-sm text-blue-800 mt-1">Routine tasks like <strong>Transaction Processing</strong> and <strong>Compliance Reporting</strong> will see a 60-80% reduction in human hours due to automation.</p>
+                    </div>
+                    <div class="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+                        <h4 class="font-bold text-orange-900">Strategic Expansion</h4>
+                        <p class="text-sm text-orange-800 mt-1">Time freed up will flow into <strong>Scenario Planning</strong>, <strong>Business Partnering</strong>, and <strong>Risk Strategy</strong>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Automation Spectrum (Stacked Bar) -->
+        <section class="bg-white rounded-xl shadow-md p-8">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">Automation vs. Augmentation</h2>
+                <p class="text-slate-600 mt-2">Not every task will be replaced. The future is "Human-in-the-Loop". This chart illustrates which finance functions will be fully automated (Blue) versus those requiring human judgment (Orange).</p>
+            </div>
+
+            <div class="chart-container" style="max-height: 500px;">
+                <canvas id="automationChart"></canvas>
+            </div>
+            <div class="mt-6 text-center text-sm text-slate-500 italic">
+                Source: Industry Analysis & Projections 2025.
+            </div>
+        </section>
+
+        <!-- Section 4: The AI-Augmented Workflow (HTML Diagram) -->
+        <section class="bg-slate-900 rounded-xl shadow-lg p-8 text-white">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-white">The Modern Finance Workflow</h2>
+                <p class="text-slate-400 mt-2">How data flows through the AI-enabled finance office.</p>
+            </div>
+
+            <!-- Responsive Flowchart Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 relative items-center justify-center">
+                
+                <!-- Step 1 -->
+                <div class="flow-step md:col-span-1 flow-arrow">
+                    <div class="bg-slate-800 border-2 border-blue-500 p-6 rounded-xl text-center shadow-lg transform transition hover:scale-105">
+                        <div class="text-4xl mb-3">📡</div>
+                        <h3 class="font-bold text-blue-400">Data Ingestion</h3>
+                        <p class="text-xs text-slate-300 mt-2">Real-time feeds from ERP, CRM, & Banks</p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="flow-step md:col-span-1 flow-arrow">
+                    <div class="bg-slate-800 border-2 border-blue-500 p-6 rounded-xl text-center shadow-lg transform transition hover:scale-105">
+                        <div class="text-4xl mb-3">⚙️</div>
+                        <h3 class="font-bold text-blue-400">AI Processing</h3>
+                        <p class="text-xs text-slate-300 mt-2">Classification, Reconciliation, & Pattern Matching</p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="flow-step md:col-span-1 flow-arrow">
+                    <div class="bg-slate-800 border-2 border-orange-500 p-6 rounded-xl text-center shadow-lg transform transition hover:scale-105">
+                        <div class="text-4xl mb-3">🚨</div>
+                        <h3 class="font-bold text-orange-400">Anomaly Detection</h3>
+                        <p class="text-xs text-slate-300 mt-2">Flags risks & outliers for review</p>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="flow-step md:col-span-1 flow-arrow">
+                    <div class="bg-white text-slate-900 p-6 rounded-xl text-center shadow-lg transform transition hover:scale-105">
+                        <div class="text-4xl mb-3">🧠</div>
+                        <h3 class="font-bold text-slate-900">Strategic Review</h3>
+                        <p class="text-xs text-slate-600 mt-2">Human context applied to AI insights</p>
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="flow-step md:col-span-1 flow-arrow-last">
+                    <div class="bg-gradient-to-br from-orange-500 to-red-500 text-white p-6 rounded-xl text-center shadow-lg transform transition hover:scale-105">
+                        <div class="text-4xl mb-3">🚀</div>
+                        <h3 class="font-bold text-white">Value Action</h3>
+                        <p class="text-xs text-white mt-2">Investment, Cost Cutting, or Pivot</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 5: Skills Evolution (Bar Chart) -->
+        <section class="bg-white rounded-xl shadow-md p-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="md:col-span-1">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-4">The Talent Shift</h2>
+                    <p class="text-slate-600 mb-4">
+                        The "Excel Wizard" is being replaced by the "Data Storyteller". 
+                    </p>
+                    <p class="text-slate-600 mb-6">
+                        Technical proficiency in manual ledger management is becoming a commodity, while the ability to interpret AI outputs and navigate ethical considerations is commanding a premium in the U.S. job market.
+                    </p>
+                    <div class="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                        <span class="font-bold text-orange-800 block mb-1">Critical Insight:</span>
+                        <span class="text-sm text-orange-700">Soft skills like persuasion and ethical judgment are now "Hard Requirements" for CFO tracks.</span>
+                    </div>
+                </div>
+                <div class="md:col-span-2">
+                    <div class="chart-container">
+                        <canvas id="skillsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Economic & Productivity Impact (Line Chart) -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white rounded-xl shadow-md p-8">
+                <h3 class="text-2xl font-bold text-slate-800 mb-4">Projected Productivity Gains</h3>
+                <p class="text-sm text-slate-500 mb-6">Efficiency index (Base 100 = 2024) projected over the next decade.</p>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="productivityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-md p-8 flex flex-col justify-center">
+                <h3 class="text-2xl font-bold text-slate-800 mb-6">Future Outlook & Recommendations</h3>
+                
+                <div class="space-y-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 font-bold">1</div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-bold text-slate-800">Upskill in Data Science</h4>
+                            <p class="text-slate-600 text-sm">Finance managers must understand <i>how</i> algorithms work, not just how to read them.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex">
+                        <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-orange-100 text-orange-600 font-bold">2</div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-bold text-slate-800">Master Narrative Generation</h4>
+                            <p class="text-slate-600 text-sm">AI generates the numbers; you must generate the story that drives board decisions.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex">
+                        <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-teal-100 text-teal-600 font-bold">3</div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-bold text-slate-800">Embrace Governance</h4>
+                            <p class="text-slate-600 text-sm">Become the guardian of AI ethics and data privacy within the financial organization.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-8 text-center">
+        <p>© 2025 Financial Technology Research Institute. All rights reserved.</p>
+        <p class="text-xs mt-2">Generated for educational analysis.</p>
+    </footer>
+
+    <!-- Chart Configuration Script -->
+    <script>
+        // --- Utility Function: Label Wrapping (Strict 16 char limit) ---
+        function splitLabel(label) {
+            if (Array.isArray(label)) return label; // Already split
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = words[0];
+
+            for (let i = 1; i < words.length; i++) {
+                if (currentLine.length + 1 + words[i].length <= 16) {
+                    currentLine += ' ' + words[i];
+                } else {
+                    lines.push(currentLine);
+                    currentLine = words[i];
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        // --- Shared Tooltip Configuration ---
+        const commonTooltip = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        // --- Chart 1: Radar Chart (Functional Transformation) ---
+        const ctxRadar = document.getElementById('radarChart').getContext('2d');
+        const labelsRadar = [
+            "Transaction Processing", 
+            "Financial Reporting", 
+            "Compliance & Audit", 
+            "Strategic Planning", 
+            "Predictive Analytics", 
+            "Stakeholder Management"
+        ].map(splitLabel);
+
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: labelsRadar,
+                datasets: [
+                    {
+                        label: 'Current (2024)',
+                        data: [85, 80, 75, 30, 20, 40],
+                        fill: true,
+                        backgroundColor: 'rgba(148, 163, 184, 0.2)', // Slate 400 low opacity
+                        borderColor: '#94A3B8',
+                        pointBackgroundColor: '#94A3B8',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#94A3B8'
+                    },
+                    {
+                        label: 'Future (2034)',
+                        data: [20, 30, 30, 90, 95, 85],
+                        fill: true,
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)', // Blue 600 low opacity
+                        borderColor: '#2563EB',
+                        pointBackgroundColor: '#2563EB',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#2563EB'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                elements: { line: { borderWidth: 3 } },
+                scales: {
+                    r: {
+                        angleLines: { color: '#E2E8F0' },
+                        grid: { color: '#E2E8F0' },
+                        pointLabels: {
+                            font: { size: 12, family: 'Inter' },
+                            color: '#475569'
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                },
+                plugins: {
+                    tooltip: commonTooltip,
+                    legend: { position: 'top' }
+                }
+            }
+        });
+
+        // --- Chart 2: Stacked Bar (Automation vs Augmentation) ---
+        const ctxStacked = document.getElementById('automationChart').getContext('2d');
+        const labelsStacked = [
+            "Accounts Payable/Receivable",
+            "Expense Management",
+            "Financial Closing",
+            "Fraud Detection",
+            "Tax Compliance",
+            "FP&A (Forecasting)",
+            "M&A Strategy",
+            "Investor Relations"
+        ].map(splitLabel);
+
+        new Chart(ctxStacked, {
+            type: 'bar',
+            data: {
+                labels: labelsStacked,
+                datasets: [
+                    {
+                        label: 'AI / Automated',
+                        data: [95, 90, 80, 85, 70, 50, 20, 10],
+                        backgroundColor: '#2563EB', // Blue
+                    },
+                    {
+                        label: 'Human-Led',
+                        data: [5, 10, 20, 15, 30, 50, 80, 90],
+                        backgroundColor: '#F97316', // Orange
+                    }
+                ]
+            },
+            options: {
+                indexAxis: 'y', // Horizontal Bar
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: { color: '#F1F5F9' },
+                        ticks: { callback: (val) => val + '%' }
+                    },
+                    y: {
+                        stacked: true,
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    tooltip: commonTooltip,
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // --- Chart 3: Bar Chart (Skills Evolution) ---
+        const ctxSkills = document.getElementById('skillsChart').getContext('2d');
+        const labelsSkills = [
+            "Manual Data Entry",
+            "Basic Excel Formulas",
+            "Historical Reporting",
+            "Prompt Engineering",
+            "Data Visualization",
+            "Strategic Storytelling",
+            "AI Ethics & Governance"
+        ].map(splitLabel);
+
+        new Chart(ctxSkills, {
+            type: 'bar',
+            data: {
+                labels: labelsSkills,
+                datasets: [{
+                    label: 'Relevance Shift (10-Year Outlook)',
+                    data: [-80, -60, -50, 90, 75, 85, 95], // Negative for declining, positive for rising
+                    backgroundColor: (ctx) => {
+                        const v = ctx.raw;
+                        return v < 0 ? '#94A3B8' : '#2563EB'; // Slate for decline, Blue for rise
+                    },
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#E2E8F0' },
+                        title: { display: true, text: '% Change in Demand' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    tooltip: commonTooltip,
+                    legend: { display: false } // Custom legend in text
+                }
+            }
+        });
+
+        // --- Chart 4: Line Chart (Productivity) ---
+        const ctxLine = document.getElementById('productivityChart').getContext('2d');
+        
+        new Chart(ctxLine, {
+            type: 'line',
+            data: {
+                labels: ['2024', '2026', '2028', '2030', '2032', '2034'],
+                datasets: [{
+                    label: 'Finance Function Productivity Index',
+                    data: [100, 115, 135, 160, 195, 230],
+                    borderColor: '#F97316', // Orange
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4 // Smooth curve
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        grid: { color: '#F1F5F9' },
+                        title: { display: true, text: 'Index (Base 100)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    tooltip: commonTooltip,
+                    legend: { display: false }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>

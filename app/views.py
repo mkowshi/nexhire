@@ -2,8 +2,8 @@
 
 import os
 import uuid
-from functools import wraps # Ensure wraps is imported
-from datetime import datetime # Ensure datetime is imported
+from functools import wraps
+from datetime import datetime
 from flask import (
     render_template, redirect, url_for, flash, request, Blueprint, current_app, abort, send_from_directory
 )
@@ -12,11 +12,9 @@ from flask_mail import Message
 from itsdangerous import SignatureExpired, BadSignature
 from werkzeug.utils import secure_filename
 from sqlalchemy.orm import joinedload
-# --- V V V --- Cloudinary Import --- V V V ---
+# --- Cloudinary Import ---
 import cloudinary
 import cloudinary.uploader
-# --- ^ ^ ^ --- End Cloudinary Import --- ^ ^ ^ ---
-
 
 from . import db, mail, serializer
 from .models import User, Job, Application
@@ -33,7 +31,7 @@ employers_bp = Blueprint('employers', __name__)
 admin_bp = Blueprint('admin', __name__)
 
 
-# --- Decorators for Role Checks (RE-VERIFIED SYNTAX & INDENTATION) ---
+# --- Decorators for Role Checks ---
 def employer_required(f):
     @wraps(f)
     @login_required
@@ -63,7 +61,6 @@ def job_seeker_required(f):
             return redirect(request.referrer or url_for('main.index'))
         return f(*args, **kwargs)
     return decorated_function
-# --- End of Corrected Decorators ---
 
 
 # --- Helper Function for Sending Emails ---
@@ -288,50 +285,72 @@ def apply_job(job_id):
     if form.validate_on_submit():
         f = form.resume.data
         filename = secure_filename(f.filename)
-        cloudinary_public_id = None # Initialize
+        cloudinary_public_id = None 
 
         if not filename:
             flash('Invalid resume filename provided.', 'danger')
             return render_template('jobs/detail.html', title=job.title, job=job, already_applied=False, form=form)
 
-        # Cloudinary Upload
+        # --- V V V --- TEMP FILE UPLOAD STRATEGY --- V V V ---
+        temp_path = None
         try:
+            # 1. Save file to temporary path
+            # This ensures we have the physical file and it's not empty
+            temp_path = os.path.join(current_app.instance_path, filename)
+            f.save(temp_path)
+
+            # 2. Check if file is empty
+            if os.path.getsize(temp_path) == 0:
+                raise Exception("File is empty (0 bytes).")
+
             cld_folder = f"job_portal/resumes/{job.id}"
             unique_id = uuid.uuid4().hex[:12]
-            cld_public_id = f"{cld_folder}/{unique_id}_{filename}"
+            cld_public_id = f"{unique_id}_{filename}" 
 
-            current_app.logger.info(f"Attempting to upload resume to Cloudinary with public_id: {cld_public_id}")
+            current_app.logger.info(f"Uploading resume from temp path: {cld_public_id}")
+            
+            # 3. Upload from physical path
             upload_result = cloudinary.uploader.upload(
-                f, public_id=cld_public_id, folder=cld_folder, resource_type="raw"
+                temp_path, 
+                public_id=cld_public_id, 
+                folder=cld_folder, 
+                resource_type="raw"
             )
 
             if upload_result and upload_result.get('public_id'):
                 cloudinary_public_id = upload_result.get('public_id')
-                current_app.logger.info(f"Resume uploaded successfully to Cloudinary: {cloudinary_public_id}")
+                current_app.logger.info(f"Resume uploaded successfully: {cloudinary_public_id}")
             else:
-                raise Exception(f"Cloudinary upload failed. Result: {upload_result}")
+                raise Exception(f"Upload failed: {upload_result}")
 
         except Exception as e:
-            current_app.logger.error(f"Cloudinary upload error for user {current_user.id}, job {job_id}: {e}")
-            flash("Error uploading resume to cloud storage. Please try again.", 'danger')
+            current_app.logger.error(f"Cloudinary upload error: {e}")
+            flash("Error uploading resume. Please try again.", 'danger')
             return render_template('jobs/detail.html', title=job.title, job=job, already_applied=False, form=form)
+        finally:
+            # 4. Clean up temp file
+            if temp_path and os.path.exists(temp_path):
+                try:
+                    os.remove(temp_path)
+                except OSError as e:
+                    current_app.logger.error(f"Error removing temp file: {e}")
+        # --- ^ ^ ^ --- END TEMP FILE UPLOAD --- ^ ^ ^ ---
 
         # Create Application Record
         app_record = Application(
             job_id=job.id, job_seeker_id=current_user.id, current_ctc=form.current_ctc.data,
             expected_ctc=form.expected_ctc.data, notice_period_days=form.notice_period_days.data,
             earliest_join_date=form.earliest_join_date.data,
-            resume_public_id=cloudinary_public_id, # Save Cloudinary ID
+            resume_public_id=cloudinary_public_id, 
             status='Submitted'
         )
         db.session.add(app_record)
         try:
             db.session.commit()
             flash('Application submitted!', 'success')
-            current_app.logger.info(f"Application saved: user {current_user.id}, job {job_id}")
+            
+            # Email logic
             now_time = datetime.utcnow()
-
-            # Send Emails
             try: # Seeker Email
                 subj_seeker = f"Application Received: {job.title}"
                 job_url = url_for('jobs.job_detail', job_id=job.id, _external=True)
@@ -343,7 +362,6 @@ def apply_job(job_id):
                     flash("Confirm email failed to send.", "warning")
             except Exception as e:
                 current_app.logger.error(f"Seeker confirm email error: {e}")
-                flash("Error preparing confirmation email.", "danger")
 
             try: # Employer Email
                 emp = job.employer
@@ -354,7 +372,6 @@ def apply_job(job_id):
                     html_emp = render_template('employers/email/new_application_notification.html', employer=emp, job=job, applicant=current_user, apps_url=apps_url, now=now_time)
                     if send_email(subj_emp, [emp.email], text_emp, html_emp):
                         current_app.logger.info(f"New app email sent to {emp.email}")
-                    # else: No flash needed for user if employer email fails
                 else:
                     current_app.logger.warning(f"Employer email not found for job {job_id}")
             except Exception as e:
@@ -364,17 +381,15 @@ def apply_job(job_id):
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f"App DB save error: {e}")
-            # Attempt to delete uploaded Cloudinary file if DB fails
+            # Delete uploaded file if DB fails
             if cloudinary_public_id:
                 try:
                     cloudinary.uploader.destroy(cloudinary_public_id, resource_type="raw")
-                    current_app.logger.warning(f"Deleted orphaned Cloudinary resume {cloudinary_public_id} after DB error.")
-                except Exception as del_e:
-                     current_app.logger.error(f"Failed to delete orphaned Cloudinary file {cloudinary_public_id}: {del_e}")
+                except Exception:
+                    pass
             flash(f'Database error submitting application.', 'danger')
             return render_template('jobs/detail.html', title=job.title, job=job, already_applied=False, form=form)
 
-    # Handle GET or validation failure on POST
     elif request.method == 'POST':
         flash('Please correct errors below.', 'warning')
     return render_template('jobs/detail.html', title=job.title, job=job, already_applied=False, form=form)
@@ -385,8 +400,8 @@ def apply_job(job_id):
 def my_applications():
     page = request.args.get('page', 1, type=int)
     applications_query = Application.query.options(joinedload(Application.job))\
-                                        .filter_by(job_seeker_id=current_user.id)\
-                                        .order_by(Application.applied_at.desc())
+                                            .filter_by(job_seeker_id=current_user.id)\
+                                            .order_by(Application.applied_at.desc())
     applications = applications_query.paginate(page=page, per_page=15, error_out=False)
     return render_template('jobs/my_applications.html', title="My Applications", applications=applications)
 

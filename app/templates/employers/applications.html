@@ -20,7 +20,7 @@
                 <th scope="col">Join Date</th>
                 <th scope="col">Resume</th>
                 <th scope="col">Status</th>
-                <th scope="col" style="min-width: 250px;">Actions</th> {# Increased width for more buttons #}
+                <th scope="col" style="min-width: 250px;">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -39,16 +39,20 @@
                 <td>{{ app_obj.expected_ctc if app_obj.expected_ctc else '-' }}</td>
                 <td>{{ app_obj.notice_period_days if app_obj.notice_period_days is not none else '-' }}</td>
                 <td>{{ app_obj.earliest_join_date.strftime('%Y-%m-%d') if app_obj.earliest_join_date else '-' }}</td>
-                {# Resume Download Link #}
+                
+                {# --- V V V --- FIXED RESUME COLUMN --- V V V --- #}
                 <td>
-                    {% if app_obj.resume_filename %}
-                        <a href="{{ url_for('employers.download_resume', filename=app_obj.resume_filename) }}" class="btn btn-sm btn-outline-primary" target="_blank" title="Download Resume">
-                            <i class="bi bi-download"></i> <span class="d-none d-md-inline">Download</span>
+                    {% if app_obj.resume_public_id %}
+                        {# Use the helper function from __init__.py to generate the link #}
+                        <a href="{{ get_cloudinary_raw_url(app_obj.resume_public_id) }}" class="btn btn-sm btn-outline-primary" target="_blank" title="View Resume">
+                            <i class="bi bi-eye"></i> <span class="d-none d-md-inline">View Resume</span>
                         </a>
                     {% else %}
                         <span class="text-muted">Not Provided</span>
                     {% endif %}
                 </td>
+                {# --- ^ ^ ^ --- END FIXED RESUME COLUMN --- ^ ^ ^ --- #}
+
                 {# Status Column #}
                 <td>
                    {% if app_obj.status == 'Submitted' %} <span class="badge bg-primary">Submitted</span>
@@ -64,7 +68,8 @@
                    {% else %} <span class="badge bg-light text-dark">{{ app_obj.status }}</span> {# Fallback #}
                    {% endif %}
                 </td>
-                {# --- V V V --- ACTIONS COLUMN - UPDATED --- V V V --- #}
+                
+                {# Actions Column #}
                 <td>
                     {# Actions depend on the current status #}
                     {% if app_obj.status == 'Submitted' %}
@@ -147,9 +152,8 @@
                         <span class="text-muted">-</span> {# No further actions #}
                     {% endif %}
                 </td>
-                {# --- ^ ^ ^ --- END ACTIONS COLUMN --- ^ ^ ^ --- #}
             </tr>
-            {% endfor %} {# End of loop through applications #}
+            {% endfor %} 
         </tbody>
     </table>
 </div>
@@ -172,7 +176,7 @@
     <a href="{{ url_for('employers.dashboard') }}" class="btn btn-secondary">&laquo; Back to Dashboard</a>
 </div>
 
-{# Rejection Modals (One per application where status allows rejection - unchanged) #}
+{# Rejection Modals #}
 {% if applications and applications.items %}
     {% for app_obj in applications.items %}
         {# Render reject modal only if application can be rejected #}
@@ -212,12 +216,9 @@
     {% endfor %}
 {% endif %}
 
-{% endblock %} {# End block content #}
+{% endblock %}
 
-{# Include Bootstrap Icons #}
 {% block head %}
     {{ super() }}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 {% endblock %}
-
-{# --- End of employers/applications.html --- #}

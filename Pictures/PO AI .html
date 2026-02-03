@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Product Horizon 2026-2028: Impact on Non-Technical POs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        /* Custom Font Import */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fafaf9; /* stone-50 */
+            color: #1c1917; /* stone-900 */
+        }
+
+        /* Chart Container Styling - MANDATORY */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f5f5f4;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d6d3d1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a29e;
+        }
+
+        /* Animation utilities */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active-tab {
+            border-bottom: 3px solid #ea580c; /* orange-600 */
+            color: #ea580c;
+            font-weight: 600;
+        }
+
+        .inactive-tab {
+            border-bottom: 3px solid transparent;
+            color: #57534e; /* stone-600 */
+        }
+        .inactive-tab:hover {
+            color: #ea580c;
+            border-bottom: 3px solid #fdba74;
+        }
+        
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutral (Stone) with Burnt Orange Accents for focus and Slate Blue for data. -->
+    <!-- Application Structure Plan: Dashboard Layout. 
+         1. Header: Report Title & Context.
+         2. Navigation: Tabs for logic sections (Executive Summary, Role Evolution, Skills, Industries, Roadmap).
+         3. Main Content Area: Dynamic JS rendering of sections.
+         4. Dashboard (Summary): High-level KPIs, Radar chart teaser.
+         5. Role Evolution: "Before/After" toggle interaction.
+         6. Skills: Deep dive radar chart & list.
+         7. Industries: Grid selection to view details.
+         8. Roadmap: Vertical timeline.
+         Why: Allows non-linear exploration of a dense 18-page report. Users can jump to their industry or immediate needs (roadmap). -->
+    <!-- Visualization & Content Choices:
+         - Radar Chart: Perfect for showing multi-dimensional skill shifts (Old vs New).
+         - Bar Chart: Quantifying efficiency gains per activity.
+         - Interactive Cards: For Case Studies and Industry profiles (Goal: Inform & Organize).
+         - Timeline: CSS-based visual for the 6-month roadmap.
+         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-stone-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-stone-800 tracking-tight">AI Product Horizon <span class="text-orange-600 text-lg font-normal">2026–2028</span></span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="router('summary')" id="nav-summary" class="active-tab px-1 pt-1 text-sm font-medium transition-colors">Executive Summary</button>
+                    <button onclick="router('evolution')" id="nav-evolution" class="inactive-tab px-1 pt-1 text-sm font-medium transition-colors">Role Evolution</button>
+                    <button onclick="router('skills')" id="nav-skills" class="inactive-tab px-1 pt-1 text-sm font-medium transition-colors">Skills & Tools</button>
+                    <button onclick="router('industries')" id="nav-industries" class="inactive-tab px-1 pt-1 text-sm font-medium transition-colors">Industry Impact</button>
+                    <button onclick="router('roadmap')" id="nav-roadmap" class="inactive-tab px-1 pt-1 text-sm font-medium transition-colors">Action Plan</button>
+                </div>
+                <!-- Mobile Menu Button (simplified for demo) -->
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-stone-500 hover:text-stone-800 font-bold">Menu</button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-stone-50 border-b border-stone-200">
+            <button onclick="router('summary'); toggleMobileMenu()" class="block w-full text-left px-4 py-2 hover:bg-stone-200">Summary</button>
+            <button onclick="router('evolution'); toggleMobileMenu()" class="block w-full text-left px-4 py-2 hover:bg-stone-200">Role Evolution</button>
+            <button onclick="router('skills'); toggleMobileMenu()" class="block w-full text-left px-4 py-2 hover:bg-stone-200">Skills & Tools</button>
+            <button onclick="router('industries'); toggleMobileMenu()" class="block w-full text-left px-4 py-2 hover:bg-stone-200">Industry Impact</button>
+            <button onclick="router('roadmap'); toggleMobileMenu()" class="block w-full text-left px-4 py-2 hover:bg-stone-200">Action Plan</button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main id="app-container" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <!-- Dynamic Content injected here -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-stone-900 text-stone-400 py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm">Research Analysis for Product Leadership & C-Suite Stakeholders.</p>
+            <p class="text-xs mt-2">Forecast Horizon: 2026–2028 | Baseline: 2023–2025</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- DATA STORE ---
+        // Simulating the synthesized report content
+        const REPORT_DATA = {
+            summary: {
+                title: "The Shift from Builder to Architect",
+                intro: "By 2028, non-technical Product Owners will shift 40% of their time from execution (writing tickets, basic backlog grooming) to strategy and governance. The AI-enabled PO focuses on 'What' and 'Why', while AI agents increasingly handle the 'How'.",
+                kpis: [
+                    { label: "Efficiency Gain (Drafting)", value: "55%", desc: "Reduction in time spent on PRDs & User Stories" },
+                    { label: "Role Shift", value: "Strategy+", desc: "Increase in time allocated to Model Risk & Ethics" },
+                    { label: "Adoption Risk", value: "High", desc: "Risk of 'Hallucinated Features' entering production" }
+                ],
+                chartLabel: "Efficiency Gains by Activity (Hours/Week)",
+                chartData: [15, 8, 5, 12], // Before
+                chartDataFuture: [4, 12, 10, 4] // After
+            },
+            evolution: {
+                intro: "The Product Owner role is bifurcating. The 'Backlog Administrator' is dying; the 'AI Product Steward' is being born. Below is a comparative analysis of the daily workflow.",
+                comparison: [
+                    { 
+                        area: "Discovery", 
+                        now: "Manually interviewing users, parsing transcripts, tagging stickies in Miro.", 
+                        future: "Querying synthetic user bases (SynthUsers) for initial hypothesis validation. Analyzing 10,000 support tickets instantly for sentiment trends." 
+                    },
+                    { 
+                        area: "Definition (PRDs)", 
+                        now: "Drafting acceptance criteria from scratch. debating edge cases in meetings.", 
+                        future: "Reviewing AI-generated specs. The PO's job is 'Prompt & Audit'. Focusing on failure modes and ethical guardrails." 
+                    },
+                    { 
+                        area: "Development", 
+                        now: "Clarifying ticket details for developers. QA testing manual flows.", 
+                        future: "Validating AI-generated code prototypes. governing the 'Model Risk' of AI features. Managing vendor APIs." 
+                    }
+                ]
+            },
+            skills: {
+                intro: "The competency map for 2028 prioritizes 'Algorithmic Intuition' over technical coding skills. You don't need to write Python, but you must understand how the model thinks.",
+                radarLabels: ["Data Literacy", "Prompt Engineering", "Agile Rituals", "Model Eval / Ethics", "Stakeholder Mgmt", "Vendor Mgmt"],
+                radarCurrent: [40, 10, 90, 10, 80, 30],
+                radarFuture: [85, 80, 50, 90, 85, 70],
+                list: [
+                    { name: "Algorithmic Intuition", desc: "Understanding probability, confidence intervals, and model drift without needing to be a Data Scientist.", priority: "Critical" },
+                    { name: "AI Governance", desc: "Ability to assess bias, copyright risks, and regulatory compliance (EU AI Act) for features.", priority: "High" },
+                    { name: "Synthetic Validation", desc: "Designing experiments using AI agents as proxy users before engaging real customers.", priority: "Medium" }
+                ]
+            },
+            industries: [
+                {
+                    id: "tech",
+                    name: "Enterprise Tech (SaaS)",
+                    velocity: "Fast",
+                    focus: "Generative Workflows",
+                    useCase: "Auto-generating code, content, or workflows for end-users. Copilots for everything.",
+                    risk: "Feature bloat and hallucination. Users trusting AI outputs blindly.",
+                    caseStudy: "Atlassian/Jira Intelligence: Reduced ticket creation time by 30% but required new 'human-in-the-loop' verification steps."
+                },
+                {
+                    id: "finance",
+                    name: "Finance (FinTech)",
+                    velocity: "Medium",
+                    focus: "Fraud & Personalization",
+                    useCase: "Hyper-personalized financial advice and real-time fraud detection models.",
+                    risk: "Regulatory non-compliance (explainability). Why was the loan denied?",
+                    caseStudy: "Klarna: AI customer service agents handling 2/3 of chats, pushing POs to focus entirely on complex dispute resolution flows."
+                },
+                {
+                    id: "health",
+                    name: "Healthcare",
+                    velocity: "Slow",
+                    focus: "Clinical Decision Support",
+                    useCase: "Summarizing patient notes, flagging contraindications.",
+                    risk: "Patient safety and HIPAA privacy. Zero tolerance for hallucinations.",
+                    caseStudy: "Epic Systems: Integration of GPT-4 for drafting physician replies. POs focus heavily on clinician burnout metrics vs. pure efficiency."
+                },
+                {
+                    id: "retail",
+                    name: "Retail & E-comm",
+                    velocity: "Fast",
+                    focus: "Visual Search & Support",
+                    useCase: "Virtual try-ons, conversational shopping assistants.",
+                    risk: "Brand reputation damage from biased recommendations.",
+                    caseStudy: "Shopify Sidekick: Empowering merchants to analyze sales data via chat. POs shifted focus from dashboard design to NLP query handling."
+                }
+            ],
+            tools: [
+                { category: "Discovery", name: "Viable / Dovetail", desc: "AI analysis of unstructured customer feedback at scale." },
+                { category: "Definition", name: "ChatPRD / V0.dev", desc: "Generative UI and PRD drafting tools." },
+                { category: "Analytics", name: "Amplitude AI", desc: "Predictive cohorts and natural language data querying." },
+                { category: "Testing", name: "Synthetic Users", desc: "Testing value props with AI personas before coding." }
+            ],
+            roadmap: [
+                { time: "Months 1-2", title: "Audit & Educate", items: ["Establish AI Policy (Data Privacy)", "Train POs on Prompt Engineering Basics", "Audit current tooling for AI features"] },
+                { time: "Months 3-4", title: "Pilot & Experiment", items: ["Run one 'Synthetic User' test", "Pilot a GenAI documentation tool (e.g., Notion AI)", "Define 'Model Risk' owner for one squad"] },
+                { time: "Months 5-6", title: "Scale & Govern", items: ["Update Career Ladders with AI competencies", "Mandatory 'AI Ethics' checklist in DoR (Definition of Ready)", "Deploy internal LLM sandbox"] }
+            ]
+        };
+
+        // --- STATE MANAGEMENT ---
+        let currentTab = 'summary';
+
+        // --- CHART INSTANCES ---
+        let summaryChartInstance = null;
+        let skillsChartInstance = null;
+
+        // --- RENDER FUNCTIONS ---
+
+        function renderSummary() {
+            const data = REPORT_DATA.summary;
+            return `
+                <div class="space-y-8 fade-in">
+                    <!-- Intro Section -->
+                    <div class="bg-white p-6 rounded-xl card-shadow border border-stone-100">
+                        <h2 class="text-2xl font-bold text-stone-800 mb-4">${data.title}</h2>
+                        <p class="text-lg text-stone-600 leading-relaxed">${data.intro}</p>
+                    </div>
+
+                    <!-- KPI Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        ${data.kpis.map(kpi => `
+                            <div class="bg-white p-6 rounded-xl card-shadow border-l-4 ${kpi.label.includes('Risk') ? 'border-red-500' : 'border-emerald-500'}">
+                                <p class="text-sm font-semibold text-stone-500 uppercase tracking-wide">${kpi.label}</p>
+                                <p class="text-4xl font-bold text-stone-900 mt-2">${kpi.value}</p>
+                                <p class="text-sm text-stone-500 mt-2">${kpi.desc}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Chart Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <div class="bg-white p-6 rounded-xl card-shadow">
+                            <h3 class="text-lg font-bold text-stone-800 mb-4">Time Allocation Shift (2024 vs 2028)</h3>
+                            <div class="chart-container">
+                                <canvas id="summaryChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <h3 class="text-xl font-bold text-stone-800">Key Forecasts</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <span class="bg-orange-100 text-orange-800 text-xs font-semibold px-2 py-1 rounded mt-1 mr-3">Opportunity</span>
+                                    <p class="text-stone-700"><strong>Efficiency:</strong> POs will regain ~12 hours/week from administrative tasks to focus on customer research.</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-orange-100 text-orange-800 text-xs font-semibold px-2 py-1 rounded mt-1 mr-3">Strategy</span>
+                                    <p class="text-stone-700"><strong>Governance:</strong> The 'Definition of Done' will expand to include AI fairness, toxicity, and legal checks.</p>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded mt-1 mr-3">Risk</span>
+                                    <p class="text-stone-700"><strong>Skill Gap:</strong> 40% of current POs lack the 'Data Literacy' required to effectively manage probabilistic AI products.</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEvolution() {
+            const data = REPORT_DATA.evolution;
+            return `
+                <div class="space-y-8 fade-in">
+                    <div class="bg-white p-6 rounded-xl card-shadow">
+                        <h2 class="text-2xl font-bold text-stone-800 mb-4">Role Evolution: 2024 vs 2028</h2>
+                        <p class="text-stone-600 mb-6">${data.intro}</p>
+                        
+                        <div class="grid gap-6">
+                            ${data.comparison.map(item => `
+                                <div class="border border-stone-200 rounded-lg p-5 hover:border-orange-300 transition-colors">
+                                    <h3 class="text-lg font-bold text-stone-800 mb-3 border-b border-stone-100 pb-2">${item.area}</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="bg-stone-50 p-4 rounded text-sm text-stone-600">
+                                            <span class="block text-xs font-bold text-stone-400 uppercase mb-1">Today (2024)</span>
+                                            ${item.now}
+                                        </div>
+                                        <div class="bg-orange-50 p-4 rounded text-sm text-stone-800">
+                                            <span class="block text-xs font-bold text-orange-600 uppercase mb-1">Tomorrow (2028)</span>
+                                            ${item.future}
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSkills() {
+            const data = REPORT_DATA.skills;
+            return `
+                <div class="space-y-8 fade-in">
+                    <div class="bg-white p-6 rounded-xl card-shadow">
+                         <h2 class="text-2xl font-bold text-stone-800 mb-2">Competencies & Tools</h2>
+                         <p class="text-stone-600 mb-6">${data.intro}</p>
+
+                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Radar Chart -->
+                            <div class="bg-stone-50 rounded-xl p-4 flex flex-col items-center justify-center">
+                                <h3 class="text-md font-bold text-stone-700 mb-4 w-full text-center">Skill Shift: Traditional vs. AI-Native PO</h3>
+                                <div class="chart-container">
+                                    <canvas id="skillsChart"></canvas>
+                                </div>
+                            </div>
+                            
+                            <!-- Skills List -->
+                            <div class="space-y-4">
+                                <h3 class="text-lg font-bold text-stone-800">Priority Skills to Acquire</h3>
+                                ${data.list.map(skill => `
+                                    <div class="border-l-4 border-orange-500 pl-4 py-1">
+                                        <h4 class="font-bold text-stone-800 text-sm">${skill.name} <span class="text-xs font-normal bg-stone-200 px-2 rounded-full ml-2">${skill.priority}</span></h4>
+                                        <p class="text-sm text-stone-600 mt-1">${skill.desc}</p>
+                                    </div>
+                                `).join('')}
+
+                                <div class="mt-8 pt-6 border-t border-stone-200">
+                                    <h3 class="text-lg font-bold text-stone-800 mb-4">Emerging Tool Stack</h3>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        ${REPORT_DATA.tools.map(tool => `
+                                            <div class="bg-white border border-stone-200 p-3 rounded shadow-sm">
+                                                <div class="text-xs font-bold text-orange-600 uppercase mb-1">${tool.category}</div>
+                                                <div class="font-bold text-stone-800 text-sm">${tool.name}</div>
+                                                <div class="text-xs text-stone-500 leading-tight mt-1">${tool.desc}</div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderIndustries() {
+            return `
+                <div class="space-y-8 fade-in">
+                    <div class="bg-white p-6 rounded-xl card-shadow">
+                        <h2 class="text-2xl font-bold text-stone-800 mb-2">Industry Variations</h2>
+                        <p class="text-stone-600 mb-6">Adoption velocity and primary risks vary significantly by sector. Select a card below for details.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            ${REPORT_DATA.industries.map(ind => `
+                                <div class="border border-stone-200 rounded-xl p-6 hover:shadow-md transition-shadow cursor-default bg-stone-50">
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h3 class="text-xl font-bold text-stone-900">${ind.name}</h3>
+                                        <span class="px-2 py-1 text-xs font-bold rounded ${
+                                            ind.velocity === 'Fast' ? 'bg-green-100 text-green-800' : 
+                                            ind.velocity === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+                                        }">Velocity: ${ind.velocity}</span>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <span class="text-xs font-bold text-stone-500 uppercase">Primary Use Case</span>
+                                            <p class="text-sm text-stone-800 font-medium">${ind.useCase}</p>
+                                        </div>
+                                        <div>
+                                            <span class="text-xs font-bold text-stone-500 uppercase">Key Risk</span>
+                                            <p class="text-sm text-stone-800">${ind.risk}</p>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border border-stone-200 mt-2">
+                                            <span class="text-xs font-bold text-orange-600 uppercase flex items-center">
+                                                Case Study
+                                            </span>
+                                            <p class="text-xs text-stone-600 mt-1 italic">"${ind.caseStudy}"</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRoadmap() {
+            return `
+                <div class="space-y-8 fade-in">
+                    <div class="bg-white p-6 rounded-xl card-shadow">
+                        <h2 class="text-2xl font-bold text-stone-800 mb-2">6-Month Implementation Roadmap</h2>
+                        <p class="text-stone-600 mb-8">A tactical plan for Product Leaders to upskill teams and integrate AI safely.</p>
+
+                        <div class="relative border-l-4 border-stone-200 ml-4 space-y-12">
+                            ${REPORT_DATA.roadmap.map(phase => `
+                                <div class="relative pl-8">
+                                    <!-- Dot -->
+                                    <div class="absolute -left-3 top-0 w-6 h-6 bg-orange-500 rounded-full border-4 border-white shadow-sm"></div>
+                                    
+                                    <h3 class="text-lg font-bold text-orange-600">${phase.time}: ${phase.title}</h3>
+                                    <ul class="mt-4 space-y-3 bg-stone-50 p-4 rounded-lg border border-stone-100">
+                                        ${phase.items.map(item => `
+                                            <li class="flex items-center text-stone-700">
+                                                <span class="mr-3 text-orange-400 text-xl">▪</span> ${item}
+                                            </li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="mt-12 p-6 bg-slate-50 rounded-xl border border-slate-200">
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">Executive Recommendation</h3>
+                            <p class="text-slate-700 text-sm">
+                                "The biggest risk in 2026 is not that AI replaces Product Owners, but that POs using AI replace those who don't. 
+                                Organizations must pivot from 'Efficiency' to 'Quality' metrics immediately. Don't use AI to build the wrong thing faster."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- CHART GENERATION FUNCTIONS ---
+
+        function initSummaryChart() {
+            const ctx = document.getElementById('summaryChart');
+            if (!ctx) return;
+            
+            // Destroy existing if re-rendering
+            if (summaryChartInstance) summaryChartInstance.destroy();
+
+            summaryChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Backlog Mgmt', 'Strategy/Discovery', 'Meetings', 'QA/Testing'],
+                    datasets: [
+                        {
+                            label: '2024 (Hours/Week)',
+                            data: REPORT_DATA.summary.chartData,
+                            backgroundColor: '#d6d3d1', // stone-300
+                            borderRadius: 4
+                        },
+                        {
+                            label: '2028 Forecast',
+                            data: REPORT_DATA.summary.chartDataFuture,
+                            backgroundColor: '#ea580c', // orange-600
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: { mode: 'index', intersect: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, title: { display: true, text: 'Hours per Week' } }
+                    }
+                }
+            });
+        }
+
+        function initSkillsChart() {
+            const ctx = document.getElementById('skillsChart');
+            if (!ctx) return;
+
+            if (skillsChartInstance) skillsChartInstance.destroy();
+
+            skillsChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: REPORT_DATA.skills.radarLabels,
+                    datasets: [
+                        {
+                            label: 'Traditional PO',
+                            data: REPORT_DATA.skills.radarCurrent,
+                            fill: true,
+                            backgroundColor: 'rgba(214, 211, 209, 0.2)', // stone-300
+                            borderColor: '#a8a29e',
+                            pointBackgroundColor: '#a8a29e',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#a8a29e'
+                        },
+                        {
+                            label: 'AI-Native PO (2028)',
+                            data: REPORT_DATA.skills.radarFuture,
+                            fill: true,
+                            backgroundColor: 'rgba(234, 88, 12, 0.2)', // orange-600
+                            borderColor: '#ea580c',
+                            pointBackgroundColor: '#ea580c',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#ea580c'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: {
+                        line: { borderWidth: 3 }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: { display: false },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { display: false } // clean look
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        // --- ROUTING LOGIC ---
+
+        function router(route) {
+            currentTab = route;
+            const container = document.getElementById('app-container');
+            
+            // Update Nav State
+            document.querySelectorAll('header button').forEach(btn => {
+                if (btn.id === `nav-${route}`) {
+                    btn.classList.remove('inactive-tab');
+                    btn.classList.add('active-tab');
+                } else if (btn.id !== 'mobile-menu-btn') { // ignore mobile toggle
+                    btn.classList.add('inactive-tab');
+                    btn.classList.remove('active-tab');
+                }
+            });
+
+            // Render Content
+            switch(route) {
+                case 'summary':
+                    container.innerHTML = renderSummary();
+                    setTimeout(initSummaryChart, 100); // Wait for DOM
+                    break;
+                case 'evolution':
+                    container.innerHTML = renderEvolution();
+                    break;
+                case 'skills':
+                    container.innerHTML = renderSkills();
+                    setTimeout(initSkillsChart, 100);
+                    break;
+                case 'industries':
+                    container.innerHTML = renderIndustries();
+                    break;
+                case 'roadmap':
+                    container.innerHTML = renderRoadmap();
+                    break;
+                default:
+                    container.innerHTML = renderSummary();
+            }
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            router('summary');
+        });
+
+    </script>
+</body>
+</html>
